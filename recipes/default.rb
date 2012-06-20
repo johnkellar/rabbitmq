@@ -55,6 +55,16 @@ when "redhat", "centos", "scientific", "amazon"
     source "https://www.rabbitmq.com/releases/rabbitmq-server/v#{node[:rabbitmq][:version]}/rabbitmq-server-#{node[:rabbitmq][:version]}-1.noarch.rpm"
     action :create_if_missing
   end
+  remote_file "/tmp/rabbitmq-signing-key-public.asc" do
+  source "http://www.rabbitmq.com/rabbitmq-signing-key-public.asc"
+  action :create_if_missing
+  end
+  bash "installrabbitkey.sh" do
+    command "rpm --import http://www.rabbitmq.com/rabbitmq-signing-key-public.asc"
+  end
+  bash "removeqpidd.sh" do
+    command "service qpidd stop & chkconfig --del qpidd"
+  end
   rpm_package "/tmp/rabbitmq-server-#{node[:rabbitmq][:version]}-1.noarch.rpm" do
     action :install
   end
