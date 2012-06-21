@@ -65,6 +65,9 @@ when "redhat", "centos", "scientific", "amazon"
   bash "removeqpidd.sh" do
     command "service qpidd stop & chkconfig --del qpidd"
   end
+  bash "install management plugin.sh" do
+    command "rabbitmq-plugins enable rabbitmq_management"
+  end
   rpm_package "/tmp/rabbitmq-server-#{node[:rabbitmq][:version]}-1.noarch.rpm" do
     action :install
   end
