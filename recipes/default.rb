@@ -30,6 +30,13 @@ directory "/etc/rabbitmq/" do
   action :create
 end
 
+directory "/var/run/rabbitmq/" do
+  owner "rabbitmq"
+  group "rabbitmq"
+  mode 0755
+  action :create
+end
+
 template "/etc/rabbitmq/rabbitmq-env.conf" do
   source "rabbitmq-env.conf.erb"
   owner "root"
@@ -62,11 +69,9 @@ when "redhat", "centos", "scientific", "amazon"
   bash "installrabbitkey.sh" do
     command "rpm --import http://www.rabbitmq.com/rabbitmq-signing-key-public.asc"
   end
-  bash "removeqpidd.sh" do
-    command "service qpidd stop & chkconfig --del qpidd"
-  end
-  bash "install management plugin.sh" do
-    command "rabbitmq-plugins enable rabbitmq_management"
+
+  service "qpidd" do
+    action [:disable, :stop]
   end
   rpm_package "/tmp/rabbitmq-server-#{node[:rabbitmq][:version]}-1.noarch.rpm" do
     action :install
@@ -95,6 +100,7 @@ end
 
 service "rabbitmq-server" do
   stop_command "/usr/sbin/rabbitmqctl stop"
+  start_command "service rabbitmq-server start"
   supports :status => true, :restart => true
-  action [ :enable, :start ]
+  action [ :enable, :restart ]
 end
