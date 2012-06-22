@@ -70,7 +70,7 @@ when "redhat", "centos", "scientific", "amazon"
     action :install
   end
 
-  bash "install rabbit management.sh" do
+  execute "install rabbit management.sh" do
     command "/usr/sbin/rabbitmq-plugins enable rabbitmq_management"
   end
 end
