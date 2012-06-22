@@ -81,6 +81,15 @@ directory "/var/run/rabbitmq/" do
   action :create
 end
 
+  cookbook_file '/etc/init.d/rabbitmq-server' do
+    owner 'root'
+    group 'root'
+    mode   0755
+    source 'rabbitmq-server'
+    action :create
+  end
+end
+
 if node[:rabbitmq][:cluster]
     # If this already exists, don't do anything
     # Changing the cookie will stil have to be a manual process
