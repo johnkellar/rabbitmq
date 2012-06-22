@@ -69,6 +69,7 @@ when "redhat", "centos", "scientific", "amazon"
   rpm_package "/tmp/rabbitmq-server-#{node[:rabbitmq][:version]}-1.noarch.rpm" do
     action :install
   end
+
   bash "install rabbit management.sh" do
     command "/usr/sbin/rabbitmq-plugins enable rabbitmq_management"
   end
@@ -81,13 +82,12 @@ directory "/var/run/rabbitmq/" do
   action :create
 end
 
-  cookbook_file '/etc/init.d/rabbitmq-server' do
-    owner 'root'
-    group 'root'
-    mode   0755
-    source 'rabbitmq-server'
-    action :create
-  end
+cookbook_file '/etc/init.d/rabbitmq-server' do
+  owner 'root'
+  group 'root'
+  mode   0755
+  source 'rabbitmq-server'
+  action :create
 end
 
 if node[:rabbitmq][:cluster]
