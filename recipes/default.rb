@@ -30,13 +30,6 @@ directory "/etc/rabbitmq/" do
   action :create
 end
 
-directory "/var/run/rabbitmq/" do
-  owner "rabbitmq"
-  group "rabbitmq"
-  mode 0755
-  action :create
-end
-
 template "/etc/rabbitmq/rabbitmq-env.conf" do
   source "rabbitmq-env.conf.erb"
   owner "root"
@@ -76,6 +69,16 @@ when "redhat", "centos", "scientific", "amazon"
   rpm_package "/tmp/rabbitmq-server-#{node[:rabbitmq][:version]}-1.noarch.rpm" do
     action :install
   end
+  bash "install rabbit management.sh" do
+    command "/usr/sbin/rabbitmq-plugins enable rabbitmq_management"
+  end
+end
+
+directory "/var/run/rabbitmq/" do
+  owner "rabbitmq"
+  group "rabbitmq"
+  mode 0755
+  action :create
 end
 
 if node[:rabbitmq][:cluster]
