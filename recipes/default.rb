@@ -73,6 +73,13 @@ when "redhat", "centos", "scientific", "amazon"
   execute "install rabbit management.sh" do
     command "/usr/sbin/rabbitmq-plugins enable rabbitmq_management"
   end
+
+  execute "setup rabbit management commandline interface.sh" do
+    command "wget --http-user=guest --http-password=guest -O /usr/sbin/rabbitmqadmin http://localhost:55672/cli/rabbitmqadmin"
+  end
+  execute "change permissions on rabbit management commandline interface.sh" do
+    command "chmod 755 /usr/sbin/rabbitmqadmin"
+  end
 end
 
 directory "/var/run/rabbitmq/" do
