@@ -73,13 +73,6 @@ when "redhat", "centos", "scientific", "amazon"
   execute "install rabbit management.sh" do
     command "/usr/sbin/rabbitmq-plugins enable rabbitmq_management"
   end
-
-  execute "setup rabbit management commandline interface.sh" do
-    command "wget --http-user=guest --http-password=guest -O /usr/sbin/rabbitmqadmin http://localhost:55672/cli/rabbitmqadmin"
-  end
-  execute "change permissions on rabbit management commandline interface.sh" do
-    command "chmod 755 /usr/sbin/rabbitmqadmin"
-  end
 end
 
 directory "/var/run/rabbitmq/" do
@@ -122,4 +115,22 @@ service "rabbitmq-server" do
   start_command "service rabbitmq-server start"
   supports :status => true, :restart => true
   action [ :enable, :restart ]
+end
+
+execute "create user.sh" do
+  command "rabbitmqctl add_user #{node[:rabbitmq][:default_user]} #{node[:rabbitmq][:default_pass]}"
+  returns [0,2] # 0 = new user created, 2 = user already exists
+end
+execute "give user admin access.sh" do
+  command "rabbitmqctl set_user_tags #{node[:rabbitmq][:default_user]} administrator"
+end
+execute "setup rabbit management commandline interface.sh" do
+  command "wget --http-user=#{node[:rabbitmq][:default_user]} --http-password=#{node[:rabbitmq][:default_pass]} -O /usr/sbin/rabbitmqadmin http://localhost:55672/cli/rabbitmqadmin"
+end
+execute "change permissions on rabbit management commandline interface.sh" do
+  command "chmod 755 /usr/sbin/rabbitmqadmin"
+end
+execute "remove default guest account.sh" do
+  command "rabbitmqctl delete_user guest"
+  returns [0,2] # 0 = user deleted, 2 = user already deleted
 end
