@@ -112,6 +112,14 @@ template "/etc/rabbitmq/rabbitmq.config" do
   notifies :restart, "service[rabbitmq-server]", :immediately
 end
 
+cookbook_file '/etc/rabbitmq/enabled_plugins' do
+  owner 'root'
+  group 'root'
+  mode   644
+  source 'enabled_plugins'
+  action :create_if_missing
+end
+
 service "rabbitmq-server" do
   stop_command "/usr/sbin/rabbitmqctl stop"
   start_command "service rabbitmq-server start"
