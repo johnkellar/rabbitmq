@@ -112,12 +112,8 @@ template "/etc/rabbitmq/rabbitmq.config" do
   notifies :restart, "service[rabbitmq-server]", :immediately
 end
 
-cookbook_file '/etc/rabbitmq/enabled_plugins' do
-  owner 'root'
-  group 'root'
-  mode   644
-  source 'enabled_plugins'
-  action :create_if_missing
+execute "change permissions on enabled_plugins" do
+  command "chmod 644 /etc/rabbitmq/enabled_plugins"
 end
 
 service "rabbitmq-server" do
