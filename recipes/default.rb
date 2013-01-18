@@ -104,16 +104,16 @@ if node[:rabbitmq][:cluster]
     end
 end
 
+execute "change permissions on enabled_plugins" do
+  command "chmod 644 /etc/rabbitmq/enabled_plugins"
+end
+
 template "/etc/rabbitmq/rabbitmq.config" do
   source "rabbitmq.config.erb"
   owner "root"
   group "root"
   mode 0644
   notifies :restart, "service[rabbitmq-server]", :immediately
-end
-
-execute "change permissions on enabled_plugins" do
-  command "chmod 644 /etc/rabbitmq/enabled_plugins"
 end
 
 service "rabbitmq-server" do
